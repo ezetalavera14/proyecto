@@ -24,7 +24,7 @@ $resultado = mysqli_query($enlace, $consulta);
     body {
       background-color: #000;
       color: #fff;
-    }
+    } 
 
     .card {
       background-color: #111;
