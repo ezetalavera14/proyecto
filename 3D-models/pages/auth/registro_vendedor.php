@@ -1,5 +1,5 @@
 <?php
-include("conexion.php");
+include("../../conexion.php");
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
   $nombre = mysqli_real_escape_string($enlace, $_POST['nombre']);
