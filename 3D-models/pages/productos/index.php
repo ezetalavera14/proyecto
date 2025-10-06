@@ -141,9 +141,12 @@ $resultado = mysqli_query($enlace, $consulta);
                 <a href="../auth/login.php" class="btn btn-success mb-2">🛒</a>
               <?php endif; ?>
 
-               
-
-              <?php if (isset($_SESSION['usuario']) && $_SESSION['usuario']['tipo_usuario'] === 'vendedor' && $_SESSION['usuario']['id'] === $id_producto = $prod['id']): ?>
+              <!-- Botones Editar y Eliminar sólo si el usuario es vendedor y dueño del producto -->
+              <?php if (
+                isset($_SESSION['usuario']) &&
+                $_SESSION['usuario']['tipo_usuario'] === 'vendedor' &&
+                $_SESSION['usuario']['id'] === $prod['vendedor_id']  
+              ): ?>
                 <a href="edit.php?id=<?php echo $prod['id']; ?>" class="btn btn-success mb-2">Editar</a>
                 <a href="delete.php?id=<?php echo $prod['id']; ?>" class="btn btn-danger mb-2" onclick="return confirm('¿Seguro querés eliminar este producto?');">Eliminar</a>
               <?php endif; ?>
