@@ -134,7 +134,7 @@ $resultado = mysqli_query($enlace, $consulta);
               <a href="show.php?id=<?php echo $prod['id']; ?>" class="btn btn-magenta mb-2">Ver más</a>
 
               <?php if (isset($_SESSION['usuario'])): ?>                
-                <a href="pago.php?id=<?php echo $prod['id']; ?>" class="btn btn-magenta mb-2">Comprar ahora</a>
+                <a href="pagos.php?id=<?php echo $prod['id']; ?>" class="btn btn-magenta mb-2">Comprar ahora</a>
                 <a href="carrito.php?agregar=<?php echo $prod['id']; ?>" class="btn btn-success mb-2">🛒</a>
               <?php else: ?>
                 <a href="../auth/login.php" class="btn btn-magenta mb-2">Comprar ahora</a>
