@@ -14,7 +14,7 @@ use MercadoPago\Client\Order\OrderClient;
 use MercadoPago\Client\Common\RequestOptions;
 use MercadoPago\Exceptions\MPApiException;
 
-MercadoPagoConfig::setAccessToken("APP_USR-1806609405757683-101519-0a3c1d64880c5f29826289479341f782-1049032489");
+MercadoPagoConfig::setAccessToken("MP_ACCESS_TOKEN");
 
 $usuario_id = $_SESSION['usuario']['id'];
 $payer_email = $_SESSION['usuario']['email'] ?? "comprador@ejemplo.com";
