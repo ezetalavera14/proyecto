@@ -76,14 +76,64 @@ $imagenes = mysqli_fetch_all($res_imgs, MYSQLI_ASSOC);
 <title>Editar Producto</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <style>
-body { background-color: #000; color: #fff; }
-.form-container { max-width: 500px; margin: 60px auto; padding: 30px; background-color: #111; border-radius: 10px; box-shadow: 0 0 10px #ff00ff88; }
-.form-control, .form-label { color: #fff; background-color: #222; border: 1px solid #ff00ff; }
-.form-control:focus { background-color: #222; border-color: #cc00cc; box-shadow: 0 0 5px #cc00cc; }
-.btn-magenta { background-color: #ff00ff; color: #000; border: none; }
-.btn-magenta:hover { background-color: #cc00cc; }
-h2 { color: #ff00ff; text-align: center; margin-bottom: 20px; }
+  body {
+    background-color: #F5EFE6;
+    color: #333;
+    font-family: 'Segoe UI', sans-serif;
+  }
+
+  .form-container {
+    max-width: 500px;
+    margin: 60px auto;
+    padding: 30px;
+    background-color: #CBDCEB;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(109, 148, 197, 0.3);
+  }
+
+  .form-label {
+    color: #333;
+    font-weight: 600;
+  }
+
+  .form-control {
+    color: #333;
+    background-color: #F5EFE6;
+    border: 1px solid #6D94C5;
+    border-radius: 6px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .form-control:focus {
+    background-color: #fff;
+    border-color: #5c7fb0;
+    box-shadow: 0 0 5px rgba(92, 127, 176, 0.7);
+    outline: none;
+  }
+
+  .btn-magenta {
+    background-color: #6D94C5;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+  .btn-magenta:hover {
+    background-color: #5c7fb0;
+  }
+
+  h2 {
+    color: #6D94C5;
+    text-align: center;
+    margin-bottom: 20px;
+    font-weight: 700;
+  }
 </style>
+
 </head>
 <body>
 <div class="form-container">

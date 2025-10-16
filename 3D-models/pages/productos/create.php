@@ -14,58 +14,70 @@ if (!isset($_SESSION['usuario']) || $_SESSION['usuario']['tipo_usuario'] !== 've
   <title>Subir Producto</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
-    body {
-      background-color: #000;
-      color: #fff;
-    }
+  body {
+    background-color: #F5EFE6;
+    color: #333;
+    font-family: 'Segoe UI', sans-serif;
+  }
 
-    .form-container {
-      max-width: 500px;
-      margin: 60px auto;
-      padding: 30px;
-      background-color: #111;
-      border-radius: 10px;
-      box-shadow: 0 0 10px #ff00ff88;
-    }
+  .form-container {
+    max-width: 500px;
+    margin: 60px auto;
+    padding: 30px;
+    background-color: #CBDCEB;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(109, 148, 197, 0.3);
+  }
 
-    .form-control,
-    .form-label {
-      color: #fff;
-      background-color: #222;
-      border: 1px solid #ff00ff;
-    }
+  .form-label {
+    color: #333;
+    font-weight: 500;
+  }
 
-    .form-control:focus {
-      background-color: #222;
-      color: #fff;
-      border-color: #cc00cc;
-      box-shadow: 0 0 5px #cc00cc;
-    }
+  .form-control {
+    color: #333;
+    background-color: #F5EFE6;
+    border: 1px solid #6D94C5;
+    border-radius: 5px;
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  }
 
-    textarea.form-control {
-      resize: vertical;
-    }
+  .form-control:focus {
+    background-color: #fff;
+    color: #000;
+    border-color: #6D94C5;
+    box-shadow: 0 0 5px rgba(109, 148, 197, 0.5);
+  }
 
-    .btn-magenta,
-    .btn-primary {
-      background-color: #ff00ff;
-      color: #000;
-      border: none;
-      transition: background-color 0.3s ease;
-    }
+  textarea.form-control {
+    resize: vertical;
+  }
 
-    .btn-magenta:hover,
-    .btn-primary:hover {
-      background-color: #cc00cc;
-      color: #fff;
-    }
+  .btn-magenta,
+  .btn-primary {
+    background-color: #6D94C5;
+    color: #fff;
+    border: none;
+    transition: background-color 0.3s ease;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-weight: 500;
+  }
 
-    h2 {
-      color: #ff00ff;
-      text-align: center;
-      margin-bottom: 20px;
-    }
-  </style>
+  .btn-magenta:hover,
+  .btn-primary:hover {
+    background-color: #5c7fb0;
+    color: #fff;
+  }
+
+  h2 {
+    color: #6D94C5;
+    text-align: center;
+    margin-bottom: 20px;
+    font-weight: bold;
+  }
+</style>
+
 </head>
 
 <body>

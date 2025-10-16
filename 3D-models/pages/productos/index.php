@@ -21,59 +21,121 @@ $resultado = mysqli_query($enlace, $consulta);
   <title>MiTienda - Inicio</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
-    body {
-      background-color: #000;
-      color: #fff;
-    } 
+  body {
+    background-color: #F5EFE6;
+    color: #333; /* texto oscuro para contraste */
+    font-family: 'Segoe UI', sans-serif;
+  }
 
-    .card {
-      background-color: #111;
-      border: 1px solid #444;
-      color: #fff;
-    }
+  .card {
+    background-color: #CBDCEB;
+    border: 1px solid #6D94C5;
+    color: #000;
+    border-radius: 8px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
 
-    .btn-magenta {
-      background-color: #ff00ff;
-      color: #000;
-    }
+  .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 12px rgba(109, 148, 197, 0.4);
+  }
 
-    .btn-magenta:hover {
-      background-color: #cc00cc;
-    }
+  .btn-magenta {
+    background-color: #6D94C5;
+    color: #fff;
+    border: none;
+  }
 
-    .btn-success {
-      background-color: #28a745;
-      color: #fff;
-    }
+  .btn-magenta:hover {
+    background-color: #5c7fb0;
+  }
 
-    .btn-success:hover {
-      background-color: #218838;
-    }
+  .btn-success {
+    background-color: #E8DFCA;
+    color: #333;
+    border: 1px solid #cbbf9d;
+  }
 
-    .btn-danger {
-      background-color: #dc3545;
-      color: #fff;
-    }
+  .btn-success:hover {
+    background-color: #dcd2b5;
+  }
 
-    .btn-danger:hover {
-      background-color: #c82333;
-    }
+  .btn-danger {
+    background-color: #dc3545;
+    color: #fff;
+    border: none;
+  }
 
-    .navbar {
-      background-color: #111;
-      box-shadow: 0 0 10px #ff00ff55;
-    }
+  .btn-danger:hover {
+    background-color: #c82333;
+  }
 
-    .titulo {
-      color: #ff00ff;
-    }
+  .navbar {
+    background-color: #CBDCEB;
+    box-shadow: 0 0 10px rgba(109, 148, 197, 0.4);
+  }
 
-    .resaltar {
-      background-color: #ff00ff33;
-      padding: 2px 4px;
-      border-radius: 3px;
-    }
-  </style>
+  .titulo {
+    color: #6D94C5;
+    font-weight: bold;
+  }
+
+  .resaltar {
+    background-color: #E8DFCA;
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+
+  a.nav-link, .navbar-brand {
+    color: #333 !important;
+  }
+
+  a.nav-link:hover {
+    color: #6D94C5 !important;
+  }
+
+  input.form-control {
+    border: 1px solid #6D94C5;
+    background-color: #F5EFE6;
+    color: #333;
+  }
+
+  input.form-control::placeholder {
+    color: #aaa;
+  }
+
+  input.form-control:focus {
+    border-color: #6D94C5;
+    box-shadow: 0 0 5px rgba(109, 148, 197, 0.5);
+  }
+
+  .carousel-item img {
+  object-fit: cover;
+  height: 600px; 
+}
+
+/* SUBMENÚ */
+.submenu {
+   background: linear-gradient(180deg, #6D94C5 0%, #587aa4 100%); /* tono más oscuro que el navbar */
+  border-top: 2px solid #4a6b96; /* sutil línea separadora */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); /* da sensación de capa */
+}
+
+.submenu .nav-link {
+  color: #F5EFE6 !important; /* texto claro sobre fondo oscuro */
+  font-weight: 500;
+  transition: color 0.3s, transform 0.2s;
+}
+
+.submenu .nav-link:hover {
+  color: #E8DFCA !important; /* beige suave al pasar el mouse */
+  transform: translateY(-2px);
+  text-decoration: underline;
+}
+
+
+</style>
+
 </head>
 
 <body>
@@ -109,8 +171,57 @@ $resultado = mysqli_query($enlace, $consulta);
     </div>
   </nav>
 
+  <!-- SUBMENÚ -->
+<div class="submenu py-2 px-4">
+  <ul class="nav justify-content-center">
+    <li class="nav-item"><a href="#" class="nav-link text-white">Categorías</a></li>
+    <li class="nav-item"><a href="#" class="nav-link text-white">Ofertas</a></li>
+    <li class="nav-item"><a href="#" class="nav-link text-white">Nuevos modelos</a></li>
+    <li class="nav-item"><a href="#" class="nav-link text-white">Populares</a></li>
+  </ul>
+</div>
+
+
+  <div id="carouselDestacados" class="carousel slide" data-bs-ride="carousel" data-bs-interval="3000">
+  <div class="carousel-inner">
+
+    <div class="carousel-item active">
+      <img src="../../marketing/naruto20.png" class="d-block w-100" alt="Banner 1">
+    </div>
+    <div class="carousel-item">
+      <img src="../../marketing/kakashi.png" class="d-block w-100" alt="Banner 2">
+    </div>
+    <div class="carousel-item">
+      <img src="../../marketing/5f81d6f1-c719-406b-9c07-59110415e919.png" class="d-block w-100" alt="Banner 3">
+    </div>
+  </div>
+
+  <!-- Controles (anterior / siguiente) -->
+  <button class="carousel-control-prev" type="button" data-bs-target="#carouselDestacados" data-bs-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Anterior</span>
+  </button>
+
+  <button class="carousel-control-next" type="button" data-bs-target="#carouselDestacados" data-bs-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="visually-hidden">Siguiente</span>
+  </button>
+
+  <!-- Indicadores (puntos debajo del carrusel) -->
+  <div class="carousel-indicators">
+    <button type="button" data-bs-target="#carouselDestacados" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+    <button type="button" data-bs-target="#carouselDestacados" data-bs-slide-to="1" aria-label="Slide 2"></button>
+    <button type="button" data-bs-target="#carouselDestacados" data-bs-slide-to="2" aria-label="Slide 3"></button>
+  </div>
+</div>
+
+
+
+
+
+
   <div class="container py-5">
-    <h1 class="titulo text-center mb-5">Productos disponibles</h1>
+    <h1 class="titulo text-center mb-5">Productos Disponibles</h1>
     <div class="row row-cols-1 row-cols-md-3 g-4">
       <?php while ($prod = mysqli_fetch_assoc($resultado)) {
         $id_producto = $prod['id'];
@@ -133,13 +244,20 @@ $resultado = mysqli_query($enlace, $consulta);
               <p class="card-text"><?php echo substr($prod['descripcion'], 0, 60) . '...'; ?></p>
               <a href="show.php?id=<?php echo $prod['id']; ?>" class="btn btn-magenta mb-2">Ver más</a>
 
-              <?php if (isset($_SESSION['usuario'])): ?>                
-                <a href="pago.php?id=<?php echo $prod['id']; ?>" class="btn btn-magenta mb-2">Comprar ahora</a>
+             <?php if (isset($_SESSION['usuario'])): ?>  
+              <?php 
+                $es_vendedor_dueño = $_SESSION['usuario']['tipo_usuario'] === 'vendedor' && 
+                $_SESSION['usuario']['id'] === $prod['vendedor_id'];
+                if (!$es_vendedor_dueño): 
+              ?>
+                <a href="pagos.php?id=<?php echo $prod['id']; ?>" class="btn btn-magenta mb-2">Comprar ahora</a>
                 <a href="carrito.php?agregar=<?php echo $prod['id']; ?>" class="btn btn-success mb-2">🛒</a>
-              <?php else: ?>
-                <a href="../auth/login.php" class="btn btn-magenta mb-2">Comprar ahora</a>
-                <a href="../auth/login.php" class="btn btn-success mb-2">🛒</a>
               <?php endif; ?>
+                  <?php else: ?>
+                    <a href="../auth/login.php" class="btn btn-magenta mb-2">Comprar ahora</a>
+                    <a href="../auth/login.php" class="btn btn-success mb-2">🛒</a>
+                  <?php endif; ?>
+
 
               <!-- Botones Editar y Eliminar sólo si el usuario es vendedor y dueño del producto -->
               <?php if (
@@ -156,6 +274,8 @@ $resultado = mysqli_query($enlace, $consulta);
       <?php } ?>
     </div>
   </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 
 </html>

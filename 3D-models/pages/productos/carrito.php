@@ -49,43 +49,81 @@ if (!$resultado) die("Error al consultar el carrito: " . mysqli_error($enlace));
   <title>Mi Carrito</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
-    body {
-      background-color: #000;
-      color: #fff;
-    }
-    .card {
-      background-color: #111;
-      border: 1px solid #444;
-      color: #fff;
-    }
-    .btn-magenta {
-      background-color: #ff00ff;
-      color: #000;
-    }
-    .btn-magenta:hover {
-      background-color: #cc00cc;
-    }
-    .btn-success {
-      background-color: #28a745;
-      color: #fff;
-    }
-    .btn-success:hover {
-      background-color: #218838;
-    }
-    .btn-danger {
-      background-color: #dc3545;
-      color: #fff;
-    }
-    .btn-danger:hover {
-      background-color: #c82333;
-    }
-    .navbar {
-      background-color: #111;
-      box-shadow: 0 0 10px #ff00ff55;
-    }
-    .titulo {
-      color: #ff00ff;
-    }
+  body {
+    background-color: #F5EFE6;
+    color: #333;
+    font-family: 'Segoe UI', sans-serif;
+  }
+
+  .card {
+    background-color: #CBDCEB;
+    border: 1px solid #6D94C5;
+    color: #333;
+    border-radius: 8px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 12px rgba(109, 148, 197, 0.3);
+  }
+
+  .btn-magenta {
+    background-color: #6D94C5;
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    font-weight: 500;
+  }
+
+  .btn-magenta:hover {
+    background-color: #5c7fb0;
+  }
+
+  .btn-success {
+    background-color: #E8DFCA;
+    color: #333;
+    border: 1px solid #cbbf9d;
+    padding: 8px 16px;
+    border-radius: 5px;
+  }
+
+  .btn-success:hover {
+    background-color: #dcd2b5;
+  }
+
+  .btn-danger {
+    background-color: #dc3545;
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+  }
+
+  .btn-danger:hover {
+    background-color: #c82333;
+  }
+
+  .navbar {
+    background-color: #CBDCEB;
+    box-shadow: 0 0 10px rgba(109, 148, 197, 0.3);
+  }
+
+  .titulo {
+    color: #6D94C5;
+    font-weight: bold;
+    font-size: 1.5rem;
+  }
+
+  a.nav-link,
+  .navbar-brand {
+    color: #333 !important;
+  }
+
+  a.nav-link:hover {
+    color: #6D94C5 !important;
+  }
   </style>
 </head>
 <body>
