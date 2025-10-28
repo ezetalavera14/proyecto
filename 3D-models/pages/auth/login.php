@@ -44,23 +44,75 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
   <title>Login</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
-    body { background-color: #000; color: #fff; }
+    body { 
+      background-color: #F5EFE6; /* beige claro de fondo */
+      color: #333; 
+      font-family: 'Segoe UI', sans-serif;
+    }
+
     .form-container {
       max-width: 400px;
       margin: 60px auto;
       padding: 30px;
-      background-color: #111;
-      border-radius: 10px;
-      box-shadow: 0 0 10px #ff00ff88;
+      background-color: #CBDCEB; /* azul claro */
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(109,148,197,0.5);
+      border: 2px solid #6D94C5; /* borde magenta/azul */
     }
-    .form-control, .form-label { color: #fff; }
+
+    .form-label {
+      color: #333;
+      font-weight: 500;
+    }
+
+    .form-control {
+      border: 1px solid #6D94C5;
+      background-color: #F5EFE6;
+      color: #333;
+    }
+
+    .form-control:focus {
+      border-color: #6D94C5;
+      box-shadow: 0 0 5px rgba(109,148,197,0.5);
+      background-color: #fff;
+      color: #333;
+    }
+
     .btn-magenta {
-      background-color: #ff00ff; color: #000; border: none;
+      background-color: #6D94C5;
+      color: #fff;
+      border: none;
+      font-weight: bold;
+      transition: 0.3s;
     }
-    .btn-magenta:hover { background-color: #cc00cc; }
-    .title { color: #ff00ff; }
-    .form-text a { color: #005eff; }
-    .form-check-label { color: #fff; }
+
+    .btn-magenta:hover {
+      background-color: #587aa4;
+      color: #fff;
+    }
+
+    .title {
+      color: #6D94C5;
+      font-weight: bold;
+    }
+
+    .form-text a {
+      color: #6D94C5;
+      text-decoration: none;
+    }
+
+    .form-text a:hover {
+      text-decoration: underline;
+    }
+
+    .form-check-label {
+      color: #333;
+    }
+
+    .form-check-input:checked {
+      background-color: #6D94C5;
+      border-color: #587aa4;
+    }
   </style>
 </head>
 <body>

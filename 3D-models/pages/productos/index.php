@@ -4,17 +4,23 @@ include("../../conexion.php");
 
 $busqueda = '';
 if (isset($_GET['buscar']) && !empty(trim($_GET['buscar']))) {
-  $busqueda = mysqli_real_escape_string($enlace, $_GET['buscar']);
-  $consulta = "SELECT * FROM productos WHERE titulo LIKE '%$busqueda%' ORDER BY id DESC";
+    $busqueda = mysqli_real_escape_string($enlace, $_GET['buscar']);
+    $consulta = "
+        SELECT p.*, v.nombre AS vendedor_nombre, v.foto AS vendedor_foto
+        FROM productos p
+        JOIN vendedores v ON p.vendedor_id = v.id
+        WHERE p.titulo LIKE '%$busqueda%'
+        ORDER BY p.id DESC
+    ";
 } else {
-  $consulta = "
-  SELECT p.*, v.nombre AS vendedor_nombre, v.foto AS vendedor_foto 
-  FROM productos p
-  JOIN vendedores v ON p.vendedor_id = v.id
-  ORDER BY p.id DESC
-";
-
+    $consulta = "
+        SELECT p.*, v.nombre AS vendedor_nombre, v.foto AS vendedor_foto
+        FROM productos p
+        JOIN vendedores v ON p.vendedor_id = v.id
+        ORDER BY p.id DESC
+    ";
 }
+
 
 if (isset($_POST['toggle_like'])) {
     $usuario_id = intval($_SESSION['usuario']['id']); // ID del usuario logueado
@@ -24,10 +30,10 @@ if (isset($_POST['toggle_like'])) {
     $check = mysqli_query($enlace, "SELECT * FROM likes WHERE usuario_id = $usuario_id AND producto_id = $producto_id");
 
     if (mysqli_num_rows($check) > 0) {
-        // Si ya existe el like → eliminarlo (toggle)
+        // Si ya existe el like lo eliminarlo (toggle)
         mysqli_query($enlace, "DELETE FROM likes WHERE usuario_id = $usuario_id AND producto_id = $producto_id");
     } else {
-        // Si no existe → agregarlo
+        // Si no existe lo agrega
         mysqli_query($enlace, "INSERT INTO likes (usuario_id, producto_id) VALUES ($usuario_id, $producto_id)");
     }
 
@@ -49,38 +55,86 @@ $resultado = mysqli_query($enlace, $consulta);
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
   body {
-    background-color: #F5EFE6;
-    color: #333; /* texto oscuro para contraste */
-    font-family: 'Segoe UI', sans-serif;
+     background-color: #FAFAFA;
+    font-family: 'Poppins', sans-serif;
+    color: #222;
+  }
+
+    h1, h5 {
+    font-weight: 600;
+    letter-spacing: 0.3px;
   }
 
   .card {
-    background-color: #CBDCEB;
-    border: 1px solid #6D94C5;
-    color: #000;
-    border-radius: 8px;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-  }
+  background: #fff;
+  border: none;
+  border-radius: 12px;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+}
 
-  .card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 4px 12px rgba(109, 148, 197, 0.4);
-  }
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
 
-  .btn-magenta {
-    background-color: #6D94C5;
-    color: #fff;
+.card-img-top {
+  height: 260px;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.card:hover .card-img-top {
+  transform: scale(1.05);
+}
+
+.card-body {
+  padding: 1.3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.precio {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #2b2d42;
+}
+
+.badge-oferta {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background-color: #e63946;
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 4px 8px;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(230, 57, 70, 0.3);
+}
+
+
+    .btn-magenta {
+    background: linear-gradient(90deg, #6D94C5 0%, #4A6FA8 100%);
     border: none;
+    color: #fff;
+    font-weight: 500;
+    border-radius: 6px;
+    transition: all 0.25s ease;
   }
 
   .btn-magenta:hover {
-    background-color: #5c7fb0;
+    transform: translateY(-2px);
+    background: linear-gradient(90deg, #587bb0 0%, #3c5f8a 100%);
   }
 
   .btn-success {
     background-color: #E8DFCA;
+    border: none;
     color: #333;
-    border: 1px solid #cbbf9d;
+    font-weight: 500;
   }
 
   .btn-success:hover {
@@ -102,9 +156,8 @@ $resultado = mysqli_query($enlace, $consulta);
     box-shadow: 0 0 10px rgba(109, 148, 197, 0.4);
   }
 
-  .titulo {
-    color: #6D94C5;
-    font-weight: bold;
+   .titulo {
+    color: #344e87;
   }
 
   .resaltar {
@@ -245,9 +298,9 @@ $resultado = mysqli_query($enlace, $consulta);
 </div>
 
 
-  <div id="carouselDestacados" class="carousel slide" data-bs-ride="carousel" data-bs-interval="3000">
+  <?php if (empty($busqueda)): // Solo mostrar carrusel si NO hay búsqueda ?>
+<div id="carouselDestacados" class="carousel slide" data-bs-ride="carousel" data-bs-interval="3000">
   <div class="carousel-inner">
-
     <div class="carousel-item active">
       <img src="../../marketing/naruto20.png" class="d-block w-100" alt="Banner 1">
     </div>
@@ -259,7 +312,6 @@ $resultado = mysqli_query($enlace, $consulta);
     </div>
   </div>
 
-  <!-- Controles (anterior / siguiente) -->
   <button class="carousel-control-prev" type="button" data-bs-target="#carouselDestacados" data-bs-slide="prev">
     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
     <span class="visually-hidden">Anterior</span>
@@ -270,17 +322,13 @@ $resultado = mysqli_query($enlace, $consulta);
     <span class="visually-hidden">Siguiente</span>
   </button>
 
-  <!-- Indicadores (puntos debajo del carrusel) -->
   <div class="carousel-indicators">
     <button type="button" data-bs-target="#carouselDestacados" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
     <button type="button" data-bs-target="#carouselDestacados" data-bs-slide-to="1" aria-label="Slide 2"></button>
     <button type="button" data-bs-target="#carouselDestacados" data-bs-slide-to="2" aria-label="Slide 3"></button>
   </div>
 </div>
-
-
-
-
+<?php endif; ?>
 
 
 <div class="container py-5">
@@ -390,6 +438,62 @@ $resultado = mysqli_query($enlace, $consulta);
 
   </div>
 </div>
+
+
+
+<!-- FOOTER -->
+<footer class="footer py-5 mt-5">
+  <div class="container">
+    <hr style="border-color: #6D94C5;">
+    <div class="row">
+
+      <!-- Información de la empresa -->
+      <div class="col-md-3 mb-4">
+        <h5>3D-Models</h5>
+        <p>Tu tienda de modelos 3D favoritos. Encuentra figuras de acción, accesorios y mucho más.</p>
+      </div>
+
+      <!-- Contacto -->
+      <div class="col-md-3 mb-4">
+        <h5>Contacto</h5>
+        <ul class="list-unstyled">
+          <li>📧 info@3d-models.com</li>
+          <li>📞 +54 11 1234-5678</li>
+          <li>🏢 Calle 19 & Calle 111, Buenos Aires</li>
+        </ul>
+      </div>
+
+      <!-- Enlaces útiles -->
+      <div class="col-md-3 mb-4">
+        <h5>Enlaces</h5>
+        <ul class="list-unstyled">
+          <li><a href="index.php">Inicio</a></li>
+          <li><a href=".././auth/login.php">login</a></li>
+          <li><a href="#">Categorías</a></li>
+          <li><a href="#">Contacto</a></li>
+        </ul>
+      </div>
+
+      <!-- Redes sociales -->
+      <div class="col-md-3 mb-4">
+        <h5>Síguenos</h5>
+        <div class="d-flex gap-3">
+          <a href="#"><img src="../../marketing/facebook-logo.png" alt="Facebook" width="30"></a>
+          <a href="#"><img src="../../marketing/instagram.jpg" alt="Instagram" width="30"></a>
+          <a href="#"><img src="../../marketing/twiter.jpg" alt="Twitter" width="30"></a>
+          <a href="#"><img src="../../marketing/whatsapp.png" alt="WhatsApp" width="30"></a>
+        </div>
+      </div>
+
+    </div>
+
+    <hr style="border-color: #6D94C5;">
+
+    <div class="text-center mt-3">
+      <small>&copy; 2025 3D-Models. Todos los derechos reservados.</small>
+    </div>
+  </div>
+</footer>
 
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
