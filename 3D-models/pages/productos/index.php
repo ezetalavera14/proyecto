@@ -290,7 +290,7 @@ $resultado = mysqli_query($enlace, $consulta);
   <!-- SUBMENÚ -->
 <div class="submenu py-2 px-4">
   <ul class="nav justify-content-center">
-    <li class="nav-item"><a href="#" class="nav-link text-white">Categorías</a></li>
+    <li class="nav-item"><a href="categorias.php" class="nav-link text-white">Categorías</a></li>
     <li class="nav-item"><a href="#" class="nav-link text-white">Ofertas</a></li>
     <li class="nav-item"><a href="#" class="nav-link text-white">Nuevos modelos</a></li>
     <li class="nav-item"><a href="#" class="nav-link text-white">Populares</a></li>
@@ -469,7 +469,7 @@ $resultado = mysqli_query($enlace, $consulta);
         <ul class="list-unstyled">
           <li><a href="index.php">Inicio</a></li>
           <li><a href=".././auth/login.php">login</a></li>
-          <li><a href="#">Categorías</a></li>
+          <li><a href="categorias.php">Categorías</a></li>
           <li><a href="#">Contacto</a></li>
         </ul>
       </div>
