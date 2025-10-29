@@ -2,49 +2,79 @@
 session_start();
 include("../../conexion.php");
 
-$busqueda = '';
-if (isset($_GET['buscar']) && !empty(trim($_GET['buscar']))) {
-    $busqueda = mysqli_real_escape_string($enlace, $_GET['buscar']);
-    $consulta = "
-        SELECT p.*, v.nombre AS vendedor_nombre, v.foto AS vendedor_foto
-        FROM productos p
-        JOIN vendedores v ON p.vendedor_id = v.id
-        WHERE p.titulo LIKE '%$busqueda%'
-        ORDER BY p.id DESC
-    ";
-} else {
-    $consulta = "
-        SELECT p.*, v.nombre AS vendedor_nombre, v.foto AS vendedor_foto
-        FROM productos p
-        JOIN vendedores v ON p.vendedor_id = v.id
-        ORDER BY p.id DESC
-    ";
+// Inicializar variables
+$busqueda = isset($_GET['buscar']) ? trim($_GET['buscar']) : '';
+$categoria_id = isset($_GET['categoria']) ? intval($_GET['categoria']) : 0;
+$titulo_pagina = "Productos Disponibles"; // Título por defecto
+
+// Base de la consulta
+$consulta = "
+    SELECT 
+        p.*, 
+        u.nombre AS vendedor_nombre, 
+        u.foto AS vendedor_foto, 
+        c.nombre AS categoria_nombre
+    FROM productos p
+    INNER JOIN usuarios u ON p.vendedor_id = u.id
+    LEFT JOIN categorias c ON p.categoria_id = c.id
+";
+
+// FILTROS
+$condiciones = [];
+
+// 🔹 Filtrar por búsqueda
+if (!empty($busqueda)) {
+    $busqueda = mysqli_real_escape_string($enlace, $busqueda);
+    $condiciones[] = "p.titulo LIKE '%$busqueda%'";
+    $titulo_pagina = "Resultados para: '$busqueda'";
 }
 
+// 🔹 Filtrar por categoría
+if (!empty($categoria_id)) {
+    $condiciones[] = "c.id = $categoria_id";
 
-if (isset($_POST['toggle_like'])) {
-    $usuario_id = intval($_SESSION['usuario']['id']); // ID del usuario logueado
-    $producto_id = intval($_POST['producto_id']);
-
-    // Verificar si ya le dio like
-    $check = mysqli_query($enlace, "SELECT * FROM likes WHERE usuario_id = $usuario_id AND producto_id = $producto_id");
-
-    if (mysqli_num_rows($check) > 0) {
-        // Si ya existe el like lo eliminarlo (toggle)
-        mysqli_query($enlace, "DELETE FROM likes WHERE usuario_id = $usuario_id AND producto_id = $producto_id");
+    // Obtener nombre de categoría para el título
+    $cat_query = mysqli_query($enlace, "SELECT nombre FROM categorias WHERE id = $categoria_id LIMIT 1");
+    if ($cat_query && mysqli_num_rows($cat_query) > 0) {
+        $cat_data = mysqli_fetch_assoc($cat_query);
+        $titulo_pagina = "Categoría: " . htmlspecialchars($cat_data['nombre']);
     } else {
-        // Si no existe lo agrega
-        mysqli_query($enlace, "INSERT INTO likes (usuario_id, producto_id) VALUES ($usuario_id, $producto_id)");
+        $titulo_pagina = "Categoría no encontrada";
+    }
+}
+
+// Unir condiciones si hay filtros
+if (!empty($condiciones)) {
+    $consulta .= " WHERE " . implode(" AND ", $condiciones);
+}
+
+$consulta .= " ORDER BY p.id DESC";
+
+// Ejecutar consulta
+$resultado = mysqli_query($enlace, $consulta);
+if (!$resultado) {
+    die("Error en la consulta: " . mysqli_error($enlace));
+}
+
+// Manejo de likes
+if (isset($_POST['toggle_like'])) {
+    if (isset($_SESSION['usuario'])) {
+        $usuario_id = intval($_SESSION['usuario']['id']);
+        $producto_id = intval($_POST['producto_id']);
+
+        $check = mysqli_query($enlace, "SELECT * FROM likes WHERE usuario_id = $usuario_id AND producto_id = $producto_id");
+        if (mysqli_num_rows($check) > 0) {
+            mysqli_query($enlace, "DELETE FROM likes WHERE usuario_id = $usuario_id AND producto_id = $producto_id");
+        } else {
+            mysqli_query($enlace, "INSERT INTO likes (usuario_id, producto_id) VALUES ($usuario_id, $producto_id)");
+        }
     }
 
-    // Redirigir para evitar reenvío del formulario
     header("Location: " . $_SERVER['HTTP_REFERER']);
     exit();
 }
-  
-
-$resultado = mysqli_query($enlace, $consulta);
 ?>
+
 
 <!DOCTYPE html>
 <html lang="es">
@@ -54,54 +84,119 @@ $resultado = mysqli_query($enlace, $consulta);
   <title>MiTienda - Inicio</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
-  body {
-     background-color: #FAFAFA;
-    font-family: 'Poppins', sans-serif;
-    color: #222;
-  }
+/* ======= CONFIGURACIÓN GENERAL ======= */
+body {
+  background-color: #FAFAFA;
+  font-family: 'Poppins', sans-serif;
+  color: #222;
+}
 
-    h1, h5 {
-    font-weight: 600;
-    letter-spacing: 0.3px;
-  }
+h1, h5 {
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
 
-  .card {
+/* ======= NAVBAR ======= */
+.navbar {
+  background-color: #CBDCEB;
+  box-shadow: 0 0 10px rgba(109, 148, 197, 0.4);
+}
+
+.titulo {
+  color: #344e87;
+}
+
+a.nav-link, .navbar-brand {
+  color: #333 !important;
+}
+
+a.nav-link:hover {
+  color: #6D94C5 !important;
+}
+
+/* ======= BOTÓN HAMBURGUESA ======= */
+.navbar-toggler {
+  border-color: #4A6FA8;
+}
+.navbar-toggler-icon {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3E%3Cpath stroke='rgba(74,111,168,0.9)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+}
+
+/* ======= INPUTS ======= */
+input.form-control {
+  border: 1px solid #6D94C5;
+  background-color: #F5EFE6;
+  color: #333;
+}
+input.form-control::placeholder {
+  color: #aaa;
+}
+input.form-control:focus {
+  border-color: #6D94C5;
+  box-shadow: 0 0 5px rgba(109, 148, 197, 0.5);
+}
+
+/* ======= BOTONES ======= */
+.btn-magenta {
+  background: linear-gradient(90deg, #6D94C5 0%, #4A6FA8 100%);
+  border: none;
+  color: #fff;
+  font-weight: 500;
+  border-radius: 6px;
+  transition: all 0.25s ease;
+}
+.btn-magenta:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(90deg, #587bb0 0%, #3c5f8a 100%);
+}
+
+.btn-success {
+  background-color: #E8DFCA;
+  border: none;
+  color: #333;
+  font-weight: 500;
+}
+.btn-success:hover {
+  background-color: #dcd2b5;
+}
+
+.btn-danger {
+  background-color: #dc3545;
+  color: #fff;
+  border: none;
+}
+.btn-danger:hover {
+  background-color: #c82333;
+}
+
+/* ======= CARDS ======= */
+.card {
   background: #fff;
   border: none;
   border-radius: 12px;
   overflow: hidden;
-  transition: all 0.3s ease;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
 }
-
 .card:hover {
   transform: translateY(-6px);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
 }
-
 .card-img-top {
   height: 260px;
   object-fit: cover;
-  transition: transform 0.3s ease;
 }
-
-.card:hover .card-img-top {
-  transform: scale(1.05);
-}
-
 .card-body {
   padding: 1.3rem;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 }
-
 .precio {
   font-size: 1.3rem;
   font-weight: 600;
   color: #2b2d42;
 }
-
 .badge-oferta {
   position: absolute;
   top: 10px;
@@ -114,105 +209,30 @@ $resultado = mysqli_query($enlace, $consulta);
   border-radius: 6px;
   box-shadow: 0 2px 4px rgba(230, 57, 70, 0.3);
 }
-
-
-    .btn-magenta {
-    background: linear-gradient(90deg, #6D94C5 0%, #4A6FA8 100%);
-    border: none;
-    color: #fff;
-    font-weight: 500;
-    border-radius: 6px;
-    transition: all 0.25s ease;
-  }
-
-  .btn-magenta:hover {
-    transform: translateY(-2px);
-    background: linear-gradient(90deg, #587bb0 0%, #3c5f8a 100%);
-  }
-
-  .btn-success {
-    background-color: #E8DFCA;
-    border: none;
-    color: #333;
-    font-weight: 500;
-  }
-
-  .btn-success:hover {
-    background-color: #dcd2b5;
-  }
-
-  .btn-danger {
-    background-color: #dc3545;
-    color: #fff;
-    border: none;
-  }
-
-  .btn-danger:hover {
-    background-color: #c82333;
-  }
-
-  .navbar {
-    background-color: #CBDCEB;
-    box-shadow: 0 0 10px rgba(109, 148, 197, 0.4);
-  }
-
-   .titulo {
-    color: #344e87;
-  }
-
-  .resaltar {
-    background-color: #E8DFCA;
-    padding: 2px 6px;
-    border-radius: 4px;
-  }
-
-  a.nav-link, .navbar-brand {
-    color: #333 !important;
-  }
-
-  a.nav-link:hover {
-    color: #6D94C5 !important;
-  }
-
-  input.form-control {
-    border: 1px solid #6D94C5;
-    background-color: #F5EFE6;
-    color: #333;
-  }
-
-  input.form-control::placeholder {
-    color: #aaa;
-  }
-
-  input.form-control:focus {
-    border-color: #6D94C5;
-    box-shadow: 0 0 5px rgba(109, 148, 197, 0.5);
-  }
-
-  .carousel-item img {
+.card .carousel-item img {
+  height: 260px;
   object-fit: cover;
-  height: 600px; 
+  border-bottom: 1px solid #eee;
 }
 
-/* SUBMENÚ */
+/* ======= SUBMENÚ ======= */
 .submenu {
-   background: linear-gradient(180deg, #6D94C5 0%, #587aa4 100%); /* tono más oscuro que el navbar */
-  border-top: 2px solid #4a6b96; /* sutil línea separadora */
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); /* da sensación de capa */
+  background: linear-gradient(180deg, #6D94C5 0%, #587aa4 100%);
+  border-top: 2px solid #4a6b96;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
-
 .submenu .nav-link {
-  color: #F5EFE6 !important; /* texto claro sobre fondo oscuro */
+  color: #F5EFE6 !important;
   font-weight: 500;
   transition: color 0.3s, transform 0.2s;
 }
-
 .submenu .nav-link:hover {
-  color: #E8DFCA !important; /* beige suave al pasar el mouse */
+  color: #E8DFCA !important;
   transform: translateY(-2px);
   text-decoration: underline;
 }
 
+/* ======= PERFIL USUARIO ======= */
 .perfil-icono-link {
   display: inline-block;
   width: 42px;
@@ -231,61 +251,116 @@ $resultado = mysqli_query($enlace, $consulta);
   object-fit: cover;
 }
 
+/* ======= RESPONSIVIDAD ======= */
+@media (max-width: 992px) {
+  /* Navbar */
+  .navbar-collapse {
+    background-color: #CBDCEB;
+    border-radius: 12px;
+    padding: 1rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+  .navbar-nav .nav-item {
+    margin-bottom: 0.5rem;
+  }
+  .perfil-icono-link {
+    width: 50px;
+    height: 50px;
+  }
 
+  /* Búsqueda centrada en móvil */
+  form.d-flex {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+    width: 100%;
+  }
+  .btn-magenta {
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Cards */
+  .card {
+    width: 100%;
+  }
+  .carousel-item img {
+    height: 300px;
+  }
+
+  /* Submenú con scroll horizontal */
+  .submenu .nav {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .submenu .nav::-webkit-scrollbar {
+    display: none;
+  }
+}
 </style>
 
 </head>
 
 <body>
   <nav class="navbar navbar-expand-lg px-4">
+  <div class="container-fluid">
+    <!-- Logo -->
     <a class="navbar-brand titulo" href="./index.php">
       <img src="../.././marketing/logo-3dmodels.png" alt="3D-Models" style="height: 40px;">
     </a>
 
+    <!-- Botón hamburguesa -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContenido" aria-controls="navbarContenido" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
 
-    <!-- Barra de búsqueda -->
-    <form class="d-flex mx-3" method="GET" action="">
-      <input class="form-control me-2" type="search" name="buscar" placeholder="Buscar producto..." value="<?php echo htmlspecialchars($busqueda); ?>">
-      <button class="btn btn-magenta" type="submit">Buscar</button>
-    </form>
+    <!-- Contenido del navbar -->
+    <div class="collapse navbar-collapse" id="navbarContenido">
 
-    <div class="collapse navbar-collapse">
-      <ul class="navbar-nav ms-auto">
+      <!-- Barra de búsqueda -->
+      <form class="d-flex mx-auto my-3 my-lg-0" method="GET" action="">
+        <input class="form-control me-2" type="search" name="buscar" placeholder="Buscar producto..." value="<?php echo htmlspecialchars($busqueda); ?>">
+        <button class="btn btn-magenta" type="submit">Buscar</button>
+      </form>
+
+      <!-- Opciones de usuario -->
+      <ul class="navbar-nav ms-auto align-items-lg-center">
         <?php if (isset($_SESSION['usuario'])): ?>
-  
+          
+          <?php if ($_SESSION['usuario']['tipo_usuario'] === 'vendedor'): ?>
+            <li class="nav-item">
+              <a href="../productos/create.php" class="btn btn-success mx-2 my-2 my-lg-0 w-100 w-lg-auto">Subir producto</a>
+            </li>
+          <?php endif; ?>
 
-  <?php if ($_SESSION['usuario']['tipo_usuario'] === 'vendedor'): ?>
-    <li class="nav-item">
-      <a href="../productos/create.php" class="btn btn-success mx-2">Subir producto</a>
-    </li>
-  <?php endif; ?>
+          <li class="nav-item">
+            <a class="nav-link text-white text-center" href="../auth/cerrar_sesion.php">Cerrar sesión</a>
+          </li>
 
-  <li class="nav-item">
-    <a class="nav-link text-white" href="../auth/cerrar_sesion.php">Cerrar sesión</a>
-  </li>
+          <li class="nav-item d-flex align-items-center justify-content-center mt-3 mt-lg-0">
+            <span class="nav-link text-white me-2 text-center">Hola, <?php echo $_SESSION['usuario']['nombre']; ?></span>
 
-  <li class="nav-item d-flex align-items-center">
-    <span class="nav-link text-white me-2">Hola, <?php echo $_SESSION['usuario']['nombre']; ?></span>
+            <!-- Icono de perfil -->
+            <a href="../usuarios/perfil.php" class="perfil-icono-link">
+              <img src="<?php echo isset($_SESSION['usuario']['foto']) 
+                ? '../../' . $_SESSION['usuario']['foto'] 
+                : '../../assets/img/default-profile.png'; ?>" 
+                alt="Perfil" class="perfil-icono">
+            </a>
+          </li>
 
-    <!-- Icono de perfil redondo -->
-    <a href="../usuarios/perfil.php" class="perfil-icono-link">
-      <img src="<?php echo isset($_SESSION['usuario']['foto']) 
-    ? '../../' . $_SESSION['usuario']['foto'] 
-    : '../../assets/img/default-profile.png'; ?>" 
-    alt="Perfil" class="perfil-icono">
-
-    </a>
-  </li>
-
-<?php else: ?>
-  <li class="nav-item"><a class="nav-link text-white" href="../auth/login.php">Login</a></li>
-  <li class="nav-item"><a class="nav-link text-white" href="../auth/registro.php">Registro</a></li>
-  <li class="nav-item"><a class="nav-link text-white" href="../auth/registro_vendedor.php">Vendedor</a></li>
-<?php endif; ?>
-
+        <?php else: ?>
+          <li class="nav-item"><a class="nav-link text-white text-center" href="../auth/login.php">Login</a></li>
+          <li class="nav-item"><a class="nav-link text-white text-center" href="../auth/registro.php">Registro</a></li>
+          <li class="nav-item"><a class="nav-link text-white text-center" href="../auth/registro_vendedor.php">Vendedor</a></li>
+        <?php endif; ?>
       </ul>
     </div>
-  </nav>
+  </div>
+</nav>
+
 
   <!-- SUBMENÚ -->
 <div class="submenu py-2 px-4">
@@ -293,7 +368,7 @@ $resultado = mysqli_query($enlace, $consulta);
     <li class="nav-item"><a href="categorias.php" class="nav-link text-white">Categorías</a></li>
     <li class="nav-item"><a href="#" class="nav-link text-white">Ofertas</a></li>
     <li class="nav-item"><a href="#" class="nav-link text-white">Nuevos modelos</a></li>
-    <li class="nav-item"><a href="#" class="nav-link text-white">Populares</a></li>
+    <li class="nav-item"><a href="populares.php" class="nav-link text-white">Populares</a></li>
   </ul>
 </div>
 
@@ -302,7 +377,7 @@ $resultado = mysqli_query($enlace, $consulta);
 <div id="carouselDestacados" class="carousel slide" data-bs-ride="carousel" data-bs-interval="3000">
   <div class="carousel-inner">
     <div class="carousel-item active">
-      <img src="../../marketing/naruto20.png" class="d-block w-100" alt="Banner 1">
+      <img src="../../marketing/3D-CULTS_PROMO_-_ENG.webp" class="d-block w-100" alt="Banner 1">
     </div>
     <div class="carousel-item">
       <img src="../../marketing/kakashi.png" class="d-block w-100" alt="Banner 2">
@@ -332,17 +407,28 @@ $resultado = mysqli_query($enlace, $consulta);
 
 
 <div class="container py-5">
-  <h1 class="titulo text-center mb-5">Productos Disponibles</h1>
-  <div class="row row-cols-1 row-cols-md-3 g-4">
+  <h1 class="titulo text-center mb-5"><?php echo $titulo_pagina; ?></h1>
+  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+
 
     <?php while ($prod = mysqli_fetch_assoc($resultado)): 
   $id_producto = $prod['id'];
 
   //  Obtener imagen del producto
-  $consulta_img = "SELECT ruta FROM imagenes WHERE producto_id = $id_producto LIMIT 1";
-  $res_img = mysqli_query($enlace, $consulta_img);
-  $img = mysqli_fetch_assoc($res_img);
-  $ruta_imagen = $img ? "../../" . $img['ruta'] : '../../imagenes/default.jpg';
+  // 🔹 Obtener todas las imágenes del producto
+$consulta_img = "SELECT ruta FROM imagenes WHERE producto_id = $id_producto";
+$res_img = mysqli_query($enlace, $consulta_img);
+
+$imagenes = [];
+while ($img = mysqli_fetch_assoc($res_img)) {
+  $imagenes[] = "../../" . $img['ruta'];
+}
+
+// Si no hay imágenes, usar una por defecto
+if (empty($imagenes)) {
+  $imagenes[] = "../../imagenes/default.jpg";
+}
+
 
   //  Datos del vendedor (ya vienen del JOIN)
   $nombre_vendedor = htmlspecialchars($prod['vendedor_nombre'] ?? 'Vendedor desconocido');
@@ -359,7 +445,27 @@ $resultado = mysqli_query($enlace, $consulta);
     
       <div class="col">
         <div class="card h-100">
-          <img src="<?php echo $ruta_imagen; ?>" class="card-img-top" alt="<?php echo htmlspecialchars($prod['titulo']); ?>">
+          <div id="carousel-<?php echo $id_producto; ?>" class="carousel slide" data-bs-ride="carousel">
+  <div class="carousel-inner">
+    <?php foreach ($imagenes as $index => $imgRuta): ?>
+      <div class="carousel-item <?php echo $index === 0 ? 'active' : ''; ?>">
+        <img src="<?php echo $imgRuta; ?>" class="d-block w-100 card-img-top" alt="Imagen del producto <?php echo htmlspecialchars($prod['titulo']); ?>">
+      </div>
+    <?php endforeach; ?>
+  </div>
+  <?php if (count($imagenes) > 1): ?>
+    <button class="carousel-control-prev" type="button" data-bs-target="#carousel-<?php echo $id_producto; ?>" data-bs-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Anterior</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#carousel-<?php echo $id_producto; ?>" data-bs-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="visually-hidden">Siguiente</span>
+    </button>
+  <?php endif; ?>
+</div>
+
+
 
           <div class="card-body">
 
@@ -458,7 +564,7 @@ $resultado = mysqli_query($enlace, $consulta);
         <h5>Contacto</h5>
         <ul class="list-unstyled">
           <li>📧 info@3d-models.com</li>
-          <li>📞 +54 11 1234-5678</li>
+          <li>📞 +54 11 3616-7707</li>
           <li>🏢 Calle 19 & Calle 111, Buenos Aires</li>
         </ul>
       </div>
