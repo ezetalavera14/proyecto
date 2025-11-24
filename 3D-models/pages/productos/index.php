@@ -22,14 +22,14 @@ $consulta = "
 // FILTROS
 $condiciones = [];
 
-// 🔹 Filtrar por búsqueda
+//  Filtrar por búsqueda
 if (!empty($busqueda)) {
     $busqueda = mysqli_real_escape_string($enlace, $busqueda);
     $condiciones[] = "p.titulo LIKE '%$busqueda%'";
     $titulo_pagina = "Resultados para: '$busqueda'";
 }
 
-// 🔹 Filtrar por categoría
+//  Filtrar por categoría
 if (!empty($categoria_id)) {
     $condiciones[] = "c.id = $categoria_id";
 
@@ -414,8 +414,7 @@ input.form-control:focus {
     <?php while ($prod = mysqli_fetch_assoc($resultado)): 
   $id_producto = $prod['id'];
 
-  //  Obtener imagen del producto
-  // 🔹 Obtener todas las imágenes del producto
+  // Obtener todas las imágenes del producto
 $consulta_img = "SELECT ruta FROM imagenes WHERE producto_id = $id_producto";
 $res_img = mysqli_query($enlace, $consulta_img);
 
@@ -601,7 +600,7 @@ if (empty($imagenes)) {
   </div>
 </footer>
 
-
+                    
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
